@@ -114,7 +114,7 @@ pythonnet==3.0.5
 pytz==2025.2
 pyunormalize==16.0.0
 pywebview==5.4
-pywin32==310
+pywin32>=310
 pywin32-ctypes==0.2.3
 pyzmq==26.3.0
 RapidFuzz==3.13.0
@@ -150,4 +150,5 @@ wsproto==1.2.0
 yarl==1.18.3
 yfinance==0.2.55
 zstandard==0.24.0
+
 
