@@ -1,12 +1,12 @@
 ﻿aiodns==3.2.0
 aiohappyeyeballs==2.6.1
-aiohttp>=3.11.12,<4.0.0
+aiohttp<=3.10.11
 aiosignal==1.4.0
 annotated-types==0.7.0
 anyio==4.10.0
 asgiref==3.9.1
 asttokens==3.0.0
-async-hyperliquid==0.2.5
+async-hyperliquid<0.2.0
 attrs==25.3.0
 beautifulsoup4==4.13.3
 bidict==0.23.1
@@ -54,7 +54,7 @@ hexbytes==1.3.0
 hl-web3==0.1.1
 httpcore==1.0.9
 httpx==0.28.1
-hyperliquid>=0.5.0
+hyperliquid==0.4.66
 hyperliquid-python-sdk==0.10.1
 idna==3.10
 iniconfig==2.1.0
@@ -149,6 +149,7 @@ wsproto==1.2.0
 yarl==1.18.3
 yfinance==0.2.55
 zstandard==0.24.0
+
 
 
 
