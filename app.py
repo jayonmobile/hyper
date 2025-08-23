@@ -348,3 +348,4 @@ def background_task():
 if __name__ == "__main__":
     threading.Thread(target=background_task, daemon=True).start()
     socketio.run(app, debug=True)
+    app.run
