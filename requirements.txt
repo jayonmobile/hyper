@@ -1,6 +1,6 @@
 ﻿aiodns==3.2.0
 aiohappyeyeballs==2.6.1
-aiohttp==3.9.5
+aiohttp>=3.11.12,<4.0.0
 aiosignal==1.4.0
 annotated-types==0.7.0
 anyio==4.10.0
@@ -149,6 +149,7 @@ wsproto==1.2.0
 yarl==1.18.3
 yfinance==0.2.55
 zstandard==0.24.0
+
 
 
 
