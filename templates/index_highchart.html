@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OHLCV Data & Charts</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <style>
+        /* ... (keep existing styles) ... */
+        .chart-container { height: 450px; margin-bottom: 1.5rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); background-color: #ffffff; }
+        /* ... (keep existing Highcharts styles) ... */
+    </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800 p-4 md:p-6">
+    <h1 class="text-3xl font-bold mb-6 text-center text-gray-700">Real-time Crypto Data Dashboard</h1>
+
+    <!-- ... (HTML structure for sections, charts, tables remains the same) ... -->
+     <!-- 1m Timeframe Section -->
+    <section class="mb-8">
+        <h2 class="text-xl font-semibold mt-6 mb-3 text-gray-600">1m Timeframe</h2>
+        <div id="chart-container-1m" class="chart-container">
+             <div class="flex justify-center items-center h-full text-gray-500">Loading 1m chart...</div>
+        </div>
+        <div class="overflow-x-auto shadow-md rounded-lg">
+            <table id="ohlcv-table-1m" class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-200">
+                    <!-- ... table header ... -->
+                     <tr><th scope="col" class="px-4 py-2">Time</th><th scope="col" class="px-4 py-2">Open</th><th scope="col" class="px-4 py-2">High</th><th scope="col" class="px-4 py-2">Low</th><th scope="col" class="px-4 py-2">Close</th><th scope="col" class="px-4 py-2">Volume</th><th scope="col" class="px-4 py-2">MACD</th><th scope="col" class="px-4 py-2">Signal</th><th scope="col" class="px-4 py-2">Hist</th><th scope="col" class="px-4 py-2">EMA(26)</th><th scope="col" class="px-4 py-2">ADX</th></tr>
+                </thead>
+                <tbody id="ohlcv-table-body-1m" class="bg-white">
+                    <tr class="border-b border-gray-200"><td colspan="11" class="px-4 py-3 text-center text-gray-400">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <!-- 5m Timeframe Section -->
+    <section class="mb-8">
+        <h2 class="text-xl font-semibold mt-6 mb-3 text-gray-600">5m Timeframe</h2>
+        <div id="chart-container-5m" class="chart-container">
+             <div class="flex justify-center items-center h-full text-gray-500">Loading 5m chart...</div>
+        </div>
+        <div class="overflow-x-auto shadow-md rounded-lg">
+            <table id="ohlcv-table-5m" class="w-full text-sm text-left text-gray-500">
+                 <thead class="text-xs text-gray-700 uppercase bg-gray-200">
+                     <!-- ... table header ... -->
+                     <tr><th scope="col" class="px-4 py-2">Time</th><th scope="col" class="px-4 py-2">Open</th><th scope="col" class="px-4 py-2">High</th><th scope="col" class="px-4 py-2">Low</th><th scope="col" class="px-4 py-2">Close</th><th scope="col" class="px-4 py-2">Volume</th><th scope="col" class="px-4 py-2">MACD</th><th scope="col" class="px-4 py-2">Signal</th><th scope="col" class="px-4 py-2">Hist</th><th scope="col" class="px-4 py-2">EMA(26)</th><th scope="col" class="px-4 py-2">ADX</th></tr>
+                </thead>
+                <tbody id="ohlcv-table-body-5m" class="bg-white">
+                    <tr class="border-b border-gray-200"><td colspan="11" class="px-4 py-3 text-center text-gray-400">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <!-- 15m Timeframe Section -->
+     <section class="mb-8">
+        <h2 class="text-xl font-semibold mt-6 mb-3 text-gray-600">15m Timeframe</h2>
+        <div id="chart-container-15m" class="chart-container">
+             <div class="flex justify-center items-center h-full text-gray-500">Loading 15m chart...</div>
+        </div>
+        <div class="overflow-x-auto shadow-md rounded-lg">
+            <table id="ohlcv-table-15m" class="w-full text-sm text-left text-gray-500">
+                 <thead class="text-xs text-gray-700 uppercase bg-gray-200">
+                     <!-- ... table header ... -->
+                     <tr><th scope="col" class="px-4 py-2">Time</th><th scope="col" class="px-4 py-2">Open</th><th scope="col" class="px-4 py-2">High</th><th scope="col" class="px-4 py-2">Low</th><th scope="col" class="px-4 py-2">Close</th><th scope="col" class="px-4 py-2">Volume</th><th scope="col" class="px-4 py-2">MACD</th><th scope="col" class="px-4 py-2">Signal</th><th scope="col" class="px-4 py-2">Hist</th><th scope="col" class="px-4 py-2">EMA(26)</th><th scope="col" class="px-4 py-2">ADX</th></tr>
+                </thead>
+                <tbody id="ohlcv-table-body-15m" class="bg-white">
+                    <tr class="border-b border-gray-200"><td colspan="11" class="px-4 py-3 text-center text-gray-400">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    <!-- Signals Table Section -->
+    <section class="mb-8">
+        <h2 class="text-xl font-semibold mt-6 mb-3 text-gray-600">Signals Summary</h2>
+        <div class="overflow-x-auto shadow-md rounded-lg">
+            <table id="signal-table" class="w-full text-sm text-left text-gray-500">
+                <thead class="text-xs text-gray-700 uppercase bg-gray-200">
+                    <!-- ... table header ... -->
+                     <tr><th scope="col" class="px-4 py-2">Timeframe</th><th scope="col" class="px-4 py-2">Trend</th><th scope="col" class="px-4 py-2">Strength</th><th scope="col" class="px-4 py-2">Score</th></tr>
+                </thead>
+                <tbody id="signal-table-body" class="bg-white">
+                    <tr class="border-b border-gray-200"><td colspan="4" class="px-4 py-3 text-center text-gray-400">Calculating signals...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+
+    <script>
+        const socket = io();
+        const chartInstances = { '1m': null, '5m': null, '15m': null };
+
+        // --- Scoring Functions (keep as they are) ---
+        // ... score_15m_trend, score_5m_trend, score_1m_trend, determine_overall_trend ...
+        function score_15m_trend(prices, ema, macd_line, signal_line, histogram) { if (!prices || prices.length < 2 || !ema || ema.length < 2 || !histogram || histogram.length < 1) return 0; const last_price = prices[prices.length - 1]; const last_ema = ema[ema.length - 1]; const prev_ema = ema[ema.length - 2]; const last_histogram = histogram[histogram.length - 1]; if (last_price > last_ema && last_ema > prev_ema && last_histogram > 0) return 2; else if (last_price < last_ema && last_ema < prev_ema && last_histogram < 0) return -2; return 0; } function score_5m_trend(prices, ema, macd_line, signal_line, histogram) { if (!prices || prices.length < 2 || !ema || ema.length < 2 || !macd_line || macd_line.length < 1 || !signal_line || signal_line.length < 1 || !histogram || histogram.length < 2) return 0; const last_price = prices[prices.length - 1]; const last_ema = ema[ema.length - 1]; const prev_ema = ema[ema.length - 2]; const last_macd = macd_line[macd_line.length - 1]; const last_signal = signal_line[signal_line.length - 1]; const last_histogram = histogram[histogram.length - 1]; const prev_histogram = histogram[histogram.length - 2]; const significant_diff = 0.1; const rapid_expansion = 0.05; if (last_price > last_ema && last_ema > prev_ema && last_macd - last_signal > significant_diff && last_histogram > 0 && last_histogram - prev_histogram > rapid_expansion) return 3; else if (last_price > last_ema && last_ema > prev_ema) return 1; else if (last_price < last_ema && last_ema < prev_ema && last_signal - last_macd > significant_diff && last_histogram < 0 && prev_histogram - last_histogram > rapid_expansion) return -3; else if (last_price < last_ema && last_ema < prev_ema) return -1; return 0; } function score_1m_trend(prices, ema, macd_line, signal_line, histogram) { if (!prices || prices.length < 2 || !ema || ema.length < 2 || !macd_line || macd_line.length < 1 || !signal_line || signal_line.length < 1 || !histogram || histogram.length < 2) return 0; const last_price = prices[prices.length - 1]; const last_ema = ema[ema.length - 1]; const prev_ema = ema[ema.length - 2]; const last_macd = macd_line[macd_line.length - 1]; const last_signal = signal_line[signal_line.length - 1]; const last_histogram = histogram[histogram.length - 1]; const prev_histogram = histogram[histogram.length - 2]; const very_significant_diff = 0.2; const very_rapid_expansion = 0.1; if (last_price > last_ema && last_ema > prev_ema && last_macd - last_signal > very_significant_diff && last_histogram > 0 && last_histogram - prev_histogram > very_rapid_expansion) return 4; else if (last_price > last_ema && last_ema > prev_ema) return 1; else if (last_price < last_ema && last_ema < prev_ema && last_signal - last_macd > very_significant_diff && last_histogram < 0 && prev_histogram - last_histogram > very_rapid_expansion) return -4; else if (last_price < last_ema && last_ema < prev_ema) return -1; return 0; } function determine_overall_trend(score_1m, score_5m, score_15m) { const total_score = score_1m + score_5m + score_15m; let trend, strength; if (total_score >= 5) { trend = 'Up'; strength = 'Strong'; } else if (total_score > 0) { trend = 'Up'; strength = 'Weak'; } else if (total_score <= -5) { trend = 'Down'; strength = 'Strong'; } else if (total_score < 0) { trend = 'Down'; strength = 'Weak'; } else { trend = 'Unclear'; strength = 'Unclear'; } return { trend, strength, score: total_score }; }
+
+        // --- Helper to format numbers for display ---
+        function formatNum(value, decimals = 2) { /* ... */ if (value === null || value === undefined || isNaN(value)) return 'N/A'; return parseFloat(value).toFixed(decimals); }
+
+        // --- Define and Apply Highcharts Theme Globally --- <<< CHANGE HERE
+        // Basic theme mimicking Tailwind's gray aesthetic
+        Highcharts.theme = {
+            colors: ['#0ea5e9', '#f97316', '#10b981', '#ef4444', '#6366f1', '#ec4899'], // Example colors
+            chart: { backgroundColor: '#ffffff', style: { fontFamily: 'sans-serif' }, plotBorderColor: '#e5e7eb'},
+            title: { style: { color: '#374151', fontSize: '16px' } },
+            subtitle: { style: { color: '#6b7280' } },
+            xAxis: { gridLineColor: '#e5e7eb', labels: { style: { color: '#6b7280' } }, lineColor: '#d1d5db', tickColor: '#d1d5db' },
+            yAxis: { gridLineColor: '#e5e7eb', labels: { style: { color: '#6b7280' } }, lineColor: '#d1d5db', tickColor: '#d1d5db', title: { style: { color: '#6b7280' } } },
+            tooltip: { backgroundColor: 'rgba(255, 255, 255, 0.95)', style: { color: '#374151' }, borderWidth: 1, borderColor: '#e2e8f0' },
+            plotOptions: {
+                series: { dataLabels: { color: '#4b5563' }, marker: { lineColor: '#333' } },
+                candlestick: { lineColor: '#ef4444', upLineColor: '#10b981', color: '#ef4444', upColor: '#10b981' }, // Red down, Green up
+                column: { /* Default Volume/Hist color can be set here if desired, but series overrides it */ }
+            },
+            legend: { itemStyle: { color: '#374151' }, itemHoverStyle: { color: '#000' }, itemHiddenStyle: { color: '#9ca3af' } },
+            credits: { enabled: false }, // Disable credits
+             rangeSelector: {
+                buttonTheme: { fill: '#f3f4f6', stroke: '#d1d5db', style: { color: '#374151' }, states: { hover: { fill: '#e5e7eb' }, select: { fill: '#dbeafe', stroke: '#93c5fd', style: { color: '#1e40af' } } } },
+                inputBoxBorderColor: '#d1d5db', inputStyle: { backgroundColor: '#fff', color: '#374151' }, labelStyle: { color: '#6b7280' }
+            },
+            navigator: {
+                handles: { backgroundColor: '#cbd5e1', borderColor: '#94a3b8' },
+                outlineColor: '#d1d5db', maskFill: 'rgba(203, 213, 225, 0.3)',
+                series: { color: '#0ea5e9', lineColor: '#0ea5e9' }
+            },
+             scrollbar: {
+                barBackgroundColor: '#e5e7eb', barBorderColor: '#e5e7eb',
+                buttonArrowColor: '#6b7280', buttonBackgroundColor: '#e5e7eb', buttonBorderColor: '#d1d5db',
+                rifleColor: '#6b7280', trackBackgroundColor: '#f9fafb', trackBorderColor: '#f3f4f6'
+            }
+        };
+        // Apply the theme globally BEFORE any charts are created or data is processed
+        Highcharts.setOptions(Highcharts.theme);
+
+
+        // --- Function to initialize a Highcharts Stock chart ---
+        function initializeChart(containerId, title) {
+           // Theme is already set globally via Highcharts.setOptions above
+           // No need to set theme inside this function anymore
+
+           return Highcharts.stockChart(containerId, {
+                chart: { /* ... */ },
+                title: { text: title },
+                credits: { enabled: false },
+                rangeSelector: { selected: 1 },
+                xAxis: { type: 'datetime' },
+                yAxis: [
+                    { /* Price */ labels: { align: 'right', x: -3, format: '{value:.2f}' }, title: { text: 'Price' }, height: '60%', lineWidth: 2, resize: { enabled: true } },
+                    { /* Volume */ labels: { align: 'right', x: -3 }, title: { text: 'Volume' }, top: '65%', height: '15%', offset: 0, lineWidth: 2 },
+                    { /* MACD */ labels: { align: 'right', x: -3, format: '{value:.4f}' }, title: { text: 'MACD' }, top: '80%', height: '20%', offset: 0, lineWidth: 2 }
+                ],
+                tooltip: { split: true, valueDecimals: 4 },
+                // plotOptions for specific series types are handled in the theme or series definitions now
+                // plotOptions: { candlestick: { /* color/upColor now defined in theme */ } },
+                series: [
+                    { type: 'candlestick', name: 'Price', id: 'price-series', data: [], yAxis: 0, tooltip: { valueDecimals: 2 } },
+                    { type: 'column', name: 'Volume', id: 'volume-series', data: [], yAxis: 1, color: '#60a5fa' /* Explicit color for volume */ }, // Assign a color here or use theme's default plotOptions.column.color if set
+                    { type: 'line', name: 'EMA(26)', id: 'ema-series', data: [], yAxis: 0, color: Highcharts.getOptions().colors[1], dashStyle: 'ShortDash', lineWidth: 1 },
+                    { type: 'line', name: 'MACD', id: 'macd-series', data: [], yAxis: 2, color: Highcharts.getOptions().colors[0], lineWidth: 1 },
+                    { type: 'line', name: 'Signal', id: 'signal-series', data: [], yAxis: 2, color: Highcharts.getOptions().colors[1], lineWidth: 1, dashStyle: 'ShortDot' },
+                    { type: 'column', name: 'Hist', id: 'hist-series', data: [], yAxis: 2, /* Color is set per point below */ threshold: 0, // Use threshold for default coloring if needed
+                      //color: Highcharts.getOptions().colors[2], // Remove default color if setting per point
+                      //borderColor: Highcharts.getOptions().colors[2] // Remove default border if setting per point
+                    },
+                    { type: 'line', name: 'ADX', id: 'adx-series', data: [], yAxis: 2, color: Highcharts.getOptions().colors[3], lineWidth: 1, dashStyle: 'LongDash' }
+                ]
+            });
+        }
+
+
+        // --- Main Socket Update Handler ---
+        socket.on('ohlcv_update', function (all_data) {
+            const timeframes = ['1m', '5m', '15m'];
+            let allScores = {};
+
+            // --- Update OHLCV Tables and Charts ---
+            timeframes.forEach(timeframe => {
+                const tableBody = document.getElementById(`ohlcv-table-body-${timeframe}`);
+                tableBody.innerHTML = '';
+
+                const data = all_data[timeframe];
+                if (!data || data.length === 0) {
+                     tableBody.innerHTML = `<tr class="border-b border-gray-200"><td colspan="11" class="px-4 py-3 text-center text-gray-400">No data available for ${timeframe}.</td></tr>`;
+                     const chartContainer = document.getElementById(`chart-container-${timeframe}`);
+                     if (chartInstances[timeframe]) {
+                         chartContainer.innerHTML = `<div class="flex justify-center items-center h-full text-gray-500">No data available for ${timeframe} chart.</div>`;
+                         // Optional: Destroy chart if you prefer chartInstances[timeframe].destroy(); chartInstances[timeframe] = null;
+                     }
+                     return;
+                }
+
+                // --- Prepare Data for Highcharts ---
+                const ohlcData = [], volumeData = [], emaData = [], macdData = [], signalData = [], histData = [], adxData = [];
+                const pricesForScore = [], emaForScore = [], macdForScore = [], signalForScore = [], histForScore = [];
+                const sortedData = [...data].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
+
+                // Get theme colors AFTER theme is set globally
+                const upColor = Highcharts.getOptions().plotOptions.candlestick.upColor;
+                const downColor = Highcharts.getOptions().plotOptions.candlestick.color;
+
+
+                sortedData.forEach(item => {
+                    const timestamp = new Date(item.time).getTime();
+                    if (isNaN(timestamp)) { console.error(`Invalid date format for ${timeframe}:`, item.time); return; }
+
+                    const o = parseFloat(item.open), h = parseFloat(item.high), l = parseFloat(item.low), c = parseFloat(item.close);
+                    const v = parseFloat(item.volume), ema = parseFloat(item.ema), macd = parseFloat(item.macd);
+                    const signal = parseFloat(item.signal), hist = parseFloat(item.histogram), adx = parseFloat(item.adx);
+
+                    if (![o,h,l,c].some(isNaN)) ohlcData.push([timestamp, o, h, l, c]);
+                    if (!isNaN(v)) volumeData.push([timestamp, v]);
+                    if (!isNaN(ema)) emaData.push([timestamp, ema]);
+                    if (!isNaN(macd)) macdData.push([timestamp, macd]);
+                    if (!isNaN(signal)) signalData.push([timestamp, signal]);
+                    if (!isNaN(hist)) {
+                        // *** Access theme colors safely now ***
+                        const color = hist > 0 ? upColor : downColor;
+                        histData.push({ x: timestamp, y: hist, color: color, borderColor: color }); // Use fetched theme colors
+                    }
+                    if (!isNaN(adx)) adxData.push([timestamp, adx]);
+
+                    // Data for scoring
+                    if (!isNaN(c)) pricesForScore.push(c); if (!isNaN(ema)) emaForScore.push(ema); if (!isNaN(macd)) macdForScore.push(macd); if (!isNaN(signal)) signalForScore.push(signal); if (!isNaN(hist)) histForScore.push(hist);
+
+                    // Populate Table Row
+                    const row = document.createElement('tr');
+                    row.className = 'border-b border-gray-200 hover:bg-gray-50';
+                    const displayTime = item.time;
+                    row.innerHTML = `<td class="px-4 py-2 whitespace-nowrap">${displayTime}</td><td class="px-4 py-2">${formatNum(o, 2)}</td><td class="px-4 py-2">${formatNum(h, 2)}</td><td class="px-4 py-2">${formatNum(l, 2)}</td><td class="px-4 py-2">${formatNum(c, 2)}</td><td class="px-4 py-2">${formatNum(v, 0)}</td><td class="px-4 py-2">${formatNum(macd, 4)}</td><td class="px-4 py-2">${formatNum(signal, 4)}</td><td class="px-4 py-2">${formatNum(hist, 4)}</td><td class="px-4 py-2">${formatNum(ema, 4)}</td><td class="px-4 py-2">${formatNum(adx, 4)}</td>`;
+                    if (tableBody.firstChild) tableBody.insertBefore(row, tableBody.firstChild); else tableBody.appendChild(row);
+                });
+
+                 // Limit table rows
+                 const maxTableRows = 50; while (tableBody.rows.length > maxTableRows) tableBody.deleteRow(tableBody.rows.length - 1);
+
+                // --- Update or Initialize Chart ---
+                const chartContainerId = `chart-container-${timeframe}`;
+                if (!chartInstances[timeframe] && ohlcData.length > 0) {
+                    chartInstances[timeframe] = initializeChart(chartContainerId, `${timeframe.toUpperCase()} OHLCV`);
+                }
+                if (chartInstances[timeframe]) {
+                    const chart = chartInstances[timeframe];
+                    chart.get('price-series').setData(ohlcData, false);
+                    chart.get('volume-series').setData(volumeData, false);
+                    chart.get('ema-series').setData(emaData, false);
+                    chart.get('macd-series').setData(macdData, false);
+                    chart.get('signal-series').setData(signalData, false);
+                    chart.get('hist-series').setData(histData, false); // Pass the array of objects with colors
+                    chart.get('adx-series').setData(adxData, true);
+                }
+
+                // --- Calculate Score ---
+                if (timeframe === '1m') allScores['1m'] = score_1m_trend(pricesForScore, emaForScore, macdForScore, signalForScore, histForScore);
+                else if (timeframe === '5m') allScores['5m'] = score_5m_trend(pricesForScore, emaForScore, macdForScore, signalForScore, histForScore);
+                else if (timeframe === '15m') allScores['15m'] = score_15m_trend(pricesForScore, emaForScore, macdForScore, signalForScore, histForScore);
+
+            }); // End forEach timeframe
+
+            // --- Calculate and Update Signals Table ---
+            const signalTableBody = document.getElementById('signal-table-body');
+            signalTableBody.innerHTML = '';
+            if (allScores['1m'] !== undefined && allScores['5m'] !== undefined && allScores['15m'] !== undefined) {
+                const score_1m = allScores['1m'], score_5m = allScores['5m'], score_15m = allScores['15m'];
+                const overallTrend = determine_overall_trend(score_1m, score_5m, score_15m);
+                const timeFrameScores = { /* ... scores object ... */ '1m': { score: score_1m, trend: score_1m > 0 ? 'Up' : score_1m < 0 ? 'Down' : 'Unclear', strength: score_1m === 4 ? 'Very Strong' : score_1m === -4 ? 'Very Strong' : score_1m === 1 || score_1m === -1 ? 'Weak' : 'Unclear' }, '5m': { score: score_5m, trend: score_5m > 0 ? 'Up' : score_5m < 0 ? 'Down' : 'Unclear', strength: score_5m === 3 ? 'Strong' : score_5m === -3 ? 'Strong' : score_5m === 1 || score_5m === -1 ? 'Weak' : 'Unclear' }, '15m': { score: score_15m, trend: score_15m > 0 ? 'Up' : score_15m < 0 ? 'Down' : 'Unclear', strength: score_15m === 2 ? 'Strong' : score_15m === -2 ? 'Strong' : 'Unclear' }, 'Overall': overallTrend };
+                for (const [timeframe, info] of Object.entries(timeFrameScores)) {
+                     let signalClass = '', textClass = 'text-gray-800'; /* ... class logic ... */ if (info.trend === 'Up') { signalClass = info.strength.includes('Strong') ? 'bg-green-200' : 'bg-green-100'; textClass = info.strength.includes('Strong') ? 'text-green-800' : 'text-green-700'; } else if (info.trend === 'Down') { signalClass = info.strength.includes('Strong') ? 'bg-red-200' : 'bg-red-100'; textClass = info.strength.includes('Strong') ? 'text-red-800' : 'text-red-700'; } else { signalClass = 'bg-gray-200'; textClass = 'text-gray-600'; }
+                    const signalRow = document.createElement('tr');
+                    signalRow.className = `border-b border-gray-200 ${signalClass} ${textClass} font-medium`;
+                    signalRow.innerHTML = `<td class="px-4 py-2">${timeframe}</td><td class="px-4 py-2">${info.trend}</td><td class="px-4 py-2">${info.strength}</td><td class="px-4 py-2">${info.score}</td>`;
+                    signalTableBody.appendChild(signalRow);
+                }
+            } else {
+                 signalTableBody.innerHTML = `<tr class="border-b border-gray-200"><td colspan="4" class="px-4 py-3 text-center text-gray-400">Waiting for data...</td></tr>`;
+            }
+
+        }); // End socket.on('ohlcv_update')
+    </script>
+</body>
+</html>

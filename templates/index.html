@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time OHLC Chart with KLinecharts and Socket.IO</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/klinecharts/dist/umd/klinecharts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.1/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <!-- Main Chart -->
+    <div id="chart" style="width:600px;height:600px;"></div>
+
+    <!-- Add this section for OHLCV data display -->
+    <div
+        style="margin-top: 20px; padding: 15px; border: 1px solid #666; border-radius: 5px; background-color: #f5f5f5;">
+        <h3>Last OHLCV Data Point</h3>
+        <pre id="lastDataPoint"
+            style="width: 100%; height: 150px; overflow: auto; border: 1px solid #ccc; padding: 10px;"></pre>
+    </div>
+
+
+    <div class='container'>
+        <h1>AJAX Sample</h1>
+        <form id="form_ajax_sample">
+            <h2>First Name</h2>
+            <input type="text" id="firstname">
+            <h2>Last Name</h2>
+            <input type="text" id="lastname">
+            <button type="submit" name="button">Submit</button>
+        </form>
+        <div id="output"></div>
+
+
+
+        <h1>Check Position</h1>
+        <form id="form_check_position">
+            <button type="submit" name="button_check_position">Check Position</button>
+        </form>
+        <div id="output_position">a</div>
+
+        <h1>Open Buy Order</h1>
+        <form id="form_open_order_buy">
+            <button type="submit" name="button_open_order_buy">Open Buy Order</button>
+        </form>
+        <div id="open_order_buy">o</div>
+
+        <h1>Open Sell Order</h1>
+        <form id="form_open_order_sell">
+            <button type="submit" name="button_open_order_sell">Open Sell Order</button>
+        </form>
+        <div id="open_order_sell">o</div>
+
+        <h1>Cancel Order</h1>
+        <form id="form_cancel_order">
+            <button type="submit" name="button_cancel_order">Cancel Order</button>
+        </form>
+        <div id="cancel_order">o</div>
+
+
+
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#form_ajax_sample').on('submit', function (e) {
+                $.ajax({
+                    url: '/ajax_sample',  // Backend endpoint
+                    data: {
+                        firstname: $('#firstname').val(),
+                        lastname: $('#lastname').val(),
+                    },
+                    type: 'POST'
+                })
+                    .done(function (data) {
+                        $('#output').text(data.output).show();
+                    });
+                e.preventDefault();
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#form_check_position').on('submit', function (e) {
+                $.ajax({
+                    url: '/check_position',  // Backend endpoint
+                    data: {},
+                    type: 'POST'
+                })
+                    .done(function (data) {
+                        $('#output_position').text(data.output).show();
+                    });
+                e.preventDefault();
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#form_open_order_buy').on('submit', function (e) {
+                $.ajax({
+                    url: '/open_order_buy',
+                    data: {},
+                    type: 'POST'
+                })
+                    .done(function (data) {
+                        $('#open_order_buy').text(data.output).show();
+                    });
+                e.preventDefault();
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#form_open_order_sell').on('submit', function (e) {
+                $.ajax({
+                    url: '/open_order_sell',
+                    data: {},
+                    type: 'POST'
+                })
+                    .done(function (data) {
+                        $('#open_order_sell').text(data.output).show();
+                    });
+                e.preventDefault();
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#form_cancel_order').on('submit', function (e) {
+                $.ajax({
+                    url: '/cancel_order',  // Backend endpoint
+                    data: {},
+                    type: 'POST'
+                })
+                    .done(function (data) {
+                        $('#cancel_order').text(data.output).show();
+                    });
+                e.preventDefault();
+            });
+        });
+    </script>
+
+
+
+    <script>
+        // Initialize the chart after the window has loaded
+        window.onload = function () {
+            // Initialize the chart
+            const chart = klinecharts.init('chart', {
+            });
+
+            // Add RSI indicator (sub-chart)
+            chart.createIndicator('RSI', false, {
+                id: 'rsi',
+                name: 'RSI',
+                calcParams: [6, 12, 24], // Default RSI periods
+                precision: 2
+            });
+
+            // Add MACD indicator (sub-chart)
+            chart.createIndicator('MACD', false, {
+                id: 'macd',
+                name: 'MACD',
+                calcParams: [12, 26, 9], // Default MACD periods
+                precision: 2
+            });
+
+            // Add ADI (Accumulation/Distribution Index) indicator (sub-chart)
+            chart.createIndicator('ADI', false, {
+                id: 'adi',
+                name: 'ADI',
+                precision: 2
+            });
+
+            // Add EMA indicator on the candlestick pane
+            chart.createIndicator('EMA', false, {
+                id: 'ema',
+                name: 'EMA',
+                calcParams: [26], // Default EMA periods
+                precision: 2,
+                id: 'candle_pane' // Add EMA to the main candlestick pane
+            });
+
+            // Connect to WebSocket server
+            const socket = io();
+
+            // Listen for OHLCV updates
+            socket.on('ohlcv_update', (allData) => {
+                const newData = allData['1m']; // Get data for the 5m timeframe
+
+                // Display last data point
+                const lastDataDisplay = document.getElementById('lastDataPoint');
+
+                if (newData) {
+
+                    // Get the last element in the array
+                    const lastDataPoint = newData[newData.length - 1];
+
+                    // Format with timestamp conversion for readability
+                    const formattedLastPoint = {
+                        ...lastDataPoint,
+                        timestamp: new Date(lastDataPoint.time).toLocaleString()
+                    };
+
+                    lastDataDisplay.textContent = JSON.stringify(formattedLastPoint, null, 2);
+
+                    // Map incoming data to the format expected by the chart
+                    const formattedData = newData.map(dataPoint => ({
+                        open: dataPoint.open,
+                        high: dataPoint.high,
+                        low: dataPoint.low,
+                        close: dataPoint.close,
+                        timestamp: dataPoint.time,
+                        volume: dataPoint.volume || 0 // Ensure volume is included
+                    }));
+
+                    // Apply new data to the chart
+                    chart.applyNewData(formattedData);
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>
