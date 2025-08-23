@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from flask_socketio import SocketIO, emit
 import ccxt
-import talib
+#import talib
 import numpy as np
 import time
 from datetime import datetime
