@@ -189,7 +189,7 @@
             });
 
             // Connect to WebSocket server
-            const socket = io();
+            const socket = io('https://hyper-9ozj.onrender.com/');
 
             // Listen for OHLCV updates
             socket.on('ohlcv_update', (allData) => {
